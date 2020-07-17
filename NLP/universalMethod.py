@@ -2,10 +2,11 @@ import re
 import jieba
 import sys
 import matplotlib
+import jieba.posseg as ps
 from nltk import *
 from matplotlib import rcParams
 from matplotlib.font_manager import findfont, FontProperties, _rebuild
-
+from universalMethod import *
 
 # 读取文本信息
 def readFile(path):
@@ -79,22 +80,38 @@ def nltk_wf_feature(word_list=None):
     print('='*3, "频率分布图", '='*3)
     fdist.plot(30)
     
+    return fdist
+    
     # 解决中文显示问题
     # 1.查看当前字体
     # 2.更换字体库
 
 def nltk_wf_feature2(word_list=None):
-    # 方法二: 
+    # 方法二:
     from collections import Counter
     words = Counter(word_list)
     print(words.keys(), "\n", words.values())
     print("------根据字符长度------")
     wlist = [w for w in words if len(w) > 2]
     print(wlist)
+    
+def hl_freqWord(fdist):
+    wordList = []
+    print('='*3, '打印统计的词频', '='*3)
+    for key in fdist.keys():
+        if fdist.get(key) > 2 and fdist.get(key) < 20:
+            wordList.append(key + ":" + str(fdist.get(key)))
+    return wordList
 
-
-
-
-
-
-
+def extract_featureWord(str_doc):
+    featureWords = ""
+    stwList = get_stop_words()
+    # user defined the property lis of feature word: 人名, 地名, 机构名
+    user_pos_list = ['nr', 'ns', 'nt', 'nz']
+    for word, pos in ps.cut(str_doc):
+        if word not in stwList and pos in user_pos_list:
+            if word + ' ' + pos + '\n' not in featureWords:
+                featureWords += word + ' ' + pos + '\n'
+    print('\n命名实体识别:\n')
+    print(featureWords)
+    return featureWords
