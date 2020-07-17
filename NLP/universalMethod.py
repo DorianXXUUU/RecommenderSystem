@@ -115,3 +115,18 @@ def extract_featureWord(str_doc):
     print('\n命名实体识别:\n')
     print(featureWords)
     return featureWords
+
+def sklearn_tfidf_feature(corpus=None):
+    # 构建词汇表
+    vectorizer = CountVectorizer()
+    # 该类会统计每个词语的tf-idf权值
+    transformer = TfidfTransformer()
+    tfidf = transformer.fit_transform(vectorizer.fit_transform(corpus))
+    # 获取词袋模型中的所有词语
+    words = vectorizer.get_feature_names()
+    # 将tf-idf矩阵抽取出来, 元素a[i][j]表示j词在i类文本中的权重
+    weight = tfidf.toarray()
+    for i in range(len(weight)):
+        print(u"----这里输出第", i, u"类文本的词语tf-idf权重")
+        for j in range(len(words)):
+            print(words[j], weight[i][j])
